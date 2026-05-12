@@ -1,8 +1,6 @@
 receivers:
   otlp:
     protocols:
-      grpc:
-        endpoint: 0.0.0.0:4317
       http:
         endpoint: 0.0.0.0:4318
 
@@ -13,6 +11,8 @@ processors:
   memory_limiter:
     check_interval: 1s
     limit_mib: 512
+  deltatocumulative:
+    max_stale: 5m
 
 exporters:
   prometheus:
@@ -20,7 +20,13 @@ exporters:
     send_timestamps: true
     metric_expiration: 180m
     enable_open_metrics: true
-    
+    add_metric_suffixes: false
+
+  otlphttp/loki:
+    endpoint: http://loki:3100/otlp
+    tls:
+      insecure: true
+
   debug:
     verbosity: detailed
     sampling_initial: 5
@@ -30,11 +36,15 @@ service:
   pipelines:
     metrics:
       receivers: [otlp]
-      processors: [memory_limiter, batch]
+      processors: [memory_limiter, deltatocumulative, batch]
       exporters: [prometheus, debug]
-      
+    logs:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [otlphttp/loki, debug]
+
   extensions: []
-  
+
   telemetry:
     logs:
-      level: "debug"
+      level: "info"
