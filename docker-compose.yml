@@ -6,7 +6,6 @@ services:
     volumes:
       - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
     expose:
-      - "4317"   # OTLP gRPC receiver
       - "4318"   # OTLP HTTP receiver
       - "8889"   # Prometheus metrics (internal)
     depends_on:
