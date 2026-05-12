@@ -8,6 +8,11 @@ services:
     expose:
       - "4318"   # OTLP HTTP receiver
       - "8889"   # Prometheus metrics (internal)
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.otel.rule=Host(`claude-code-otel-collector.hub.fursys.com`)"
+      - "traefik.http.routers.otel.entrypoints=http,https"
+      - "traefik.http.services.otel.loadbalancer.server.port=4318"
     depends_on:
       - prometheus
     restart: unless-stopped
