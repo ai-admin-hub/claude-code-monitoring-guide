@@ -20,7 +20,6 @@ exporters:
     send_timestamps: true
     metric_expiration: 180m
     enable_open_metrics: true
-    add_metric_suffixes: false
 
   otlphttp/loki:
     endpoint: http://loki:3100/otlp
